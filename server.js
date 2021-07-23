@@ -38,26 +38,37 @@ app.get('/messages', (req, res) => {
 app.post('/messages', (req, res) => {
 	const message = new Message(req.body);
 
-	message.save((error) => {
-		if(error) {
-			console.log('ERROR => ');
-			console.log(error);
-			res.sendStatus(500);
-		}
+	message.save()
+		.then(() => {
+			console.log('Message Saved');
+			return Message.findOne({message: 'test'});
+		})
+		.then((resFound) => {
+			console.log(`resFound: ${resFound}`);
+			if(resFound) {
+				/*
+					_id : mongo manges. not part of schema
+				*/
+				console.log('test found in message', resFound);
+				return Message.deleteOne({_id: resFound.id});
+			}
+			io.emit('message', req.body);
+			res.sendStatus(200);
+		})
+			.catch((error) => {
+				console.log('ERROR => ');
+				res.sendState(500);
+				return console.error(error);
+			});
+		});
+				
+		// client.connect((err) => {
+		// 		const collection = client.db("test").collection("devices");
+		// 		perform actions on the collection object
+		// 		console.log('monngo db connected', err);
+		// 		client.close();
+		// 	});
 
-		io.emit('message', req.body);
-		res.sendStatus(200);
-	});
-
-});
-
-// client.connect((err) => {
-// 		const collection = client.db("test").collection("devices");
-// 		perform actions on the collection object
-// 		console.log('monngo db connected', err);
-// 		client.close();
-// 	});
-	
 	io.on('connect', (socket) => {
 		console.log('new user connected');
 	});

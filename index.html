@@ -8,6 +8,8 @@
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
+				<!-- socket.io -->
+				<script src="/socket.io/socket.io.js"></script>
     <title>Node Practice</title>
   </head>
   <body>
@@ -16,9 +18,11 @@
 		<div class="jumbotron">
     		<h1 class="display-4">Send Message</h1>
 			<br />
-			<input class="form-control" placeholder="name" />
+			<input id="name" class="form-control" placeholder="name" />
+						<br />
+			<textarea id="message" class="form-control" placeholder="message"></textarea>
 			<br />
-			<buton id="send" class="btn btn-success" onClick=sendMsg() >Send</button>
+			<buton id="send" class="btn btn-success">Send</button>
 		</div>
 		<div id="messages">
 		</div>
@@ -35,28 +39,52 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
     -->
 	<script>
-
+		const socket = io();
+	
 		const addMessage = ( msg ) => {
-			console.log('messages');
-			const el = document.getElementById('messages');
-			const h4_el = document.createElement('h4');
-			const p_el = document.createElement('p');
-			h4_el.textContent = `${msg.name}`;
-			p_el.textContent = `${msg.message}`;
-			el.append(h4_el);
-			el.append(p_el);
-		};
+				const el = document.getElementById('messages');
+				const h4_el = document.createElement('h4');
+				const p_el = document.createElement('p');
+				h4_el.textContent = `${msg.name}`;
+				p_el.textContent = `${msg.message}`;
+				el.append(h4_el);
+				el.append(p_el);
+		}
 
+		const postMessage = ( msg ) => {
+			return fetch('http://localhost:3000/messages', {
+				method: 'POST',
+				headers: {
+								'Content-Type': 'application/json',
+						},
+				body: JSON.stringify(msg),
+				});
+		}
 
-		// on loaded
-		;(() => {
-			console.log('Loaded files');
-			document.getElementById("send").onclick = function sendMsg() {
-				console.log('btn clicked ');
-				addMessage({name: "TestName", message: "TestMsg"});
+		const getMessages = () => {
+			return fetch('http://localhost:3000/messages')
+				.then((res) => res.json())
+				.then((data) => {
+					data.forEach(addMessage);
+				});
+		}
+
+		const sendMsg = () => {
+			const data = {
+				"name": document.getElementById("name").value,
+				"message": document.getElementById("message").value,
 			};
+			postMessage(data);
+		}
+
+		// on load
+		;(() => {
+				console.log('File Loaded');
+				document.getElementById("send").onclick = sendMsg;
+				getMessages();
 		})();
 
+		socket.on('message', addMessage);
 	</script>
   </body>
 </html>

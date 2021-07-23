@@ -36,6 +36,7 @@ app.get('/messages', (request, response) => {
 
 app.post('/messages', (request, response) => {
 	messages.push(request.body);
+	io.emit('message', request.body);
 	response.sendStatus(200);
 });
 

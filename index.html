@@ -20,7 +20,7 @@
 			<br />
 			<input id="name" class="form-control" placeholder="name" />
 						<br />
-			<textarea id="messageBox" class="form-control" placeholder="message"></textarea>
+			<textarea id="message" class="form-control" placeholder="message"></textarea>
 			<br />
 			<buton id="send" class="btn btn-success">Send</button>
 		</div>
@@ -69,18 +69,22 @@
 				});
 		}
 
+		const sendMsg = () => {
+			const data = {
+				"name": document.getElementById("name").value,
+				"message": document.getElementById("message").value,
+			};
+			postMessage(data);
+		}
+
 		// on load
 		;(() => {
 				console.log('File Loaded');
-				document.getElementById("send").onclick = function sendMsg() {
-					const data = {
-							"name": document.getElementById("name").value,
-							"message": document.getElementById("messageBox").value,
-						};
-					postMessage(data);
-				};
+				document.getElementById("send").onclick = sendMsg;
 				getMessages();
 		})();
+
+		socket.on('message', addMessage);
 	</script>
   </body>
 </html>

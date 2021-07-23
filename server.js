@@ -11,7 +11,16 @@ const messages = [
 
 const express = require('express');
 const app = express();
-// const bodyParser = require('body-parser');
+/*
+	to use socket.io
+*/
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
+
+/*
+	depreciated
+	const bodyParser = require('body-parser');
+*/
 
 /*
 Middleware for parsing application/json
@@ -30,6 +39,10 @@ app.post('/messages', (request, response) => {
 	response.sendStatus(200);
 });
 
-const server = app.listen(3000, () => {
+io.on('connect', (socket) => {
+	console.log('new user connected');
+});
+
+const server = http.listen(3000, () => {
 	console.log(`Server listening on port ${server.address().port}`);
 });

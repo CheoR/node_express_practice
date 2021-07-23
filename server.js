@@ -18,7 +18,6 @@ const app = express();
 const { MongoClient } = require('mongodb');
 const uri = `mongodb+srv://user:${process.env.DB_PASSWORD}@learnmongodb.1j6ce.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-// const uri = `mongodb+srv://user:user@learnmongodb.1j6ce.mongodb.net/learnMongoDB?retryWrites=true&w=majority`;
 
 /*
 	to use socket.io
